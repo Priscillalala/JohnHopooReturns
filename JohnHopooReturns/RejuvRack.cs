@@ -13,11 +13,7 @@ using Mono.Cecil.Cil;
 using RoR2.Orbs;
 using UnityEngine.Networking;
 using RoR2.Items;
-using BepInEx.Bootstrap;
-using RoR2.UI;
 using System.Linq;
-using UnityEngine.UI;
-using RoR2.Audio;
 using RoR2.ContentManagement;
 using RoR2.Projectile;
 using R2API.Networking.Interfaces;
@@ -46,7 +42,6 @@ namespace JohnHopooReturns
             LanguageAPI.Add("ITEM_INCREASEHEALING_PICKUP", "Invite friendly spirits when healed.");
             LanguageAPI.Add("ITEM_INCREASEHEALING_DESC", $"Store <style=cIsHealing>100%</style> <style=cStack>(+100% per stack)</style> of healing as <style=cIsHealing>Soul Energy</style>. After your <style=cIsHealing>Soul Energy</style> reaches 10% of your maximum health, <style=cIsHealing>invite a spirit</style> to increase <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+{baseSpiritRegen} hp/s</style> over <style=cIsHealing>{spiritDuration}s</style>.");
             IL.RoR2.HealthComponent.ItemCounts.ctor += ItemCounts_ctor;
-            IL.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
         }
 
         private void ItemCounts_ctor(ILContext il)
@@ -63,41 +58,6 @@ namespace JohnHopooReturns
                 c.RemoveRange(5);
             }
             else Logger.LogError($"{nameof(RejuvRack)}.{nameof(ItemCounts_ctor)} IL hook failed!");
-        }
-
-        private void CharacterBody_RecalculateStats(ILContext il)
-        {
-            int locLevelMultiplierIndex = -1;
-            int locMeatRegenBoostIndex = -1;
-            ILCursor c = new ILCursor(il);
-            if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdsfld(typeof(JunkContent.Buffs).GetField(nameof(JunkContent.Buffs.MeatRegenBoost))),
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.HasBuff)),
-                x => x.MatchBrtrue(out _),
-                x => x.MatchLdcR4(out _),
-                x => x.MatchBr(out _),
-                x => x.MatchLdcR4(out _),
-                x => x.MatchLdloc(out locLevelMultiplierIndex),
-                x => x.MatchMul(),
-                x => x.MatchStloc(out locMeatRegenBoostIndex)
-                ) && c.TryGotoNext(MoveType.After,
-                x => x.MatchLdloc(locMeatRegenBoostIndex),
-                x => x.MatchAdd()
-                ))
-            {
-                c.Emit(OpCodes.Ldarg, 0);
-                c.Emit(OpCodes.Ldloc, locLevelMultiplierIndex);
-                c.EmitDelegate<Func<CharacterBody, float, float>>((body, levelMultiplier) => 
-                {
-                    if (body.inventory && body.inventory.GetItemCount(RoR2Content.Items.IncreaseHealing) > 0 && body.TryGetComponent(out SummonSpiritsBehaviour summonSpiritsBehaviour))
-                    {
-                        return baseSpiritRegen * levelMultiplier * summonSpiritsBehaviour.activeSpirits.Count;
-                    }
-                    return 0f;
-                });
-                c.Emit(OpCodes.Add);
-            }
-            else Logger.LogError($"{nameof(RejuvRack)}.{nameof(CharacterBody_RecalculateStats)} IL hook failed!");
         }
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
@@ -248,20 +208,6 @@ namespace JohnHopooReturns
             private float summonSpiritTimerServer;
             public Queue<SpiritController> activeSpirits = new Queue<SpiritController>();
             private TemporaryVisualEffect vfxInstance;
-            //private float _activeSpiritCount;
-
-            /*public float activeSpiritCount
-            {
-                get => _activeSpiritCount;
-                set
-                {
-                    if (_activeSpiritCount != value)
-                    {
-                        _activeSpiritCount = value;
-                        body?.MarkAllStatsDirty();
-                    }
-                }
-            }*/
 
             public float vfxRadius => Mathf.Min(activeSpirits.Count * 0.1f, 1f) * Instance.maxVfxRadiusCoefficient * body.bestFitRadius;
 
@@ -274,11 +220,13 @@ namespace JohnHopooReturns
                 }
                 networkIdentity = GetComponent<NetworkIdentity>();
                 HealthComponent.onCharacterHealServer += HealthComponent_onCharacterHealServer;
+                RecalculateStatsAPI.GetStatCoefficients += RecalculateStatsAPI_GetStatCoefficients;
             }
 
             public void OnDisable()
             {
                 HealthComponent.onCharacterHealServer -= HealthComponent_onCharacterHealServer;
+                RecalculateStatsAPI.GetStatCoefficients -= RecalculateStatsAPI_GetStatCoefficients;
             }
 
             private void HealthComponent_onCharacterHealServer(HealthComponent healthComponent, float amount, ProcChainMask procChainMask)
@@ -287,6 +235,16 @@ namespace JohnHopooReturns
                 {
                     healingPoolServer = Mathf.Min(healingPoolServer + amount * stack, body.healthComponent.fullCombinedHealth);
                 }   
+            }
+
+            private void RecalculateStatsAPI_GetStatCoefficients(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+            {
+                if (sender && sender == body)
+                {
+                    float regen = Instance.baseSpiritRegen * activeSpirits.Count;
+                    args.baseRegenAdd += regen;
+                    args.levelRegenAdd += regen * StandardLevelScaling.Regen;
+                }
             }
 
             public void FixedUpdate()

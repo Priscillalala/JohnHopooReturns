@@ -11,7 +11,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.Rendering.PostProcessing;
 using EntityStates;
-using BepInEx.Bootstrap;
 using RoR2.Skills;
 using RoR2.CharacterAI;
 using System.Linq;
@@ -119,8 +118,6 @@ namespace JohnHopooReturns
             Content.effectDefs.Add(new EffectDef(BeetleBurrowEffect));
         }
 
-        //public float jumpDelay = 1.15f;
-        //public float baseBurrowEntryDuration = 2f;
         public float baseBurrowDuration = 1f;
         public float baseBurrowExitDuration = 1.3f;
         public float exitJumpMarker = 0.4f;
@@ -132,12 +129,6 @@ namespace JohnHopooReturns
         public string startSoundString = "Play_beetle_worker_idle";
         public string endSoundString = "Play_hermitCrab_unburrow";
         public float burrowAccuracyCoefficient = 0.3f;
-        //Play_beetle_worker_idle
-        //Play_hermitCrab_attack_explo
-        //Play_hermitCrab_unburrow
-        //Play_hermitCrab_burrow
-        //public float upvelocity = 15f;
-        //public float forwardVelocity = 6f;
 
         public class EnterBurrow : BaseState
         {
@@ -214,8 +205,6 @@ namespace JohnHopooReturns
         public class BeetleBurrow : BaseState
         {
             const float ARBITRARY_RADIUS = 10f;
-            //private Vector3 blinkDestination = Vector3.zero;
-            //private Vector3 blinkStart = Vector3.zero;
             private HurtBox target;
             private Vector3 predictedDestination;
             public float duration;
@@ -421,203 +410,5 @@ namespace JohnHopooReturns
                 movementHitAuthority = true;
             }
         }
-
-        /*public class BeetleJump : BaseCharacterMain
-        {
-            public BeetleJump() : base()
-            {
-                
-            }
-
-            private float duration;
-            private bool didJump;
-            private bool didCancelAnimation;
-            private bool movementHitAuthority;
-
-            public override void OnEnter()
-            {
-                base.OnEnter();
-                duration = Chainloader.ManagerObject.GetComponent<Beetles>().baseDuration;
-                Logger.LogInfo("On Enter!");
-                PlayCrossfade("Body", "EmoteSurprise", 0.1f);
-                if (isAuthority)
-                {
-                    characterMotor.onMovementHit += OnMovementHit;
-                }
-            }
-
-            private void OnMovementHit(ref CharacterMotor.MovementHitInfo movementHitInfo)
-            {
-                movementHitAuthority = true;
-            }
-
-            public override void FixedUpdate()
-            {
-                base.FixedUpdate();
-                if (fixedAge >= Chainloader.ManagerObject.GetComponent<Beetles>().jumpDelay && !didJump)
-                {
-                    Jump();
-                    didJump = true;
-                }
-                if (isAuthority && fixedAge >= duration && (movementHitAuthority || (characterMotor.Motor.GroundingStatus.IsStableOnGround && !characterMotor.Motor.LastGroundingStatus.IsStableOnGround))) 
-                {
-                    outer.SetNextStateToMain();
-                    return;
-                }
-            }
-
-            public void Jump()
-            {
-                if (isAuthority)
-                {
-                    characterMotor.Motor.ForceUnground();
-                    Vector3 forward = characterDirection.forward * Chainloader.ManagerObject.GetComponent<Beetles>().forwardVelocity * moveSpeedStat;
-                    Vector3 upward = Vector3.up * Chainloader.ManagerObject.GetComponent<Beetles>().upvelocity;
-                    characterMotor.velocity = forward + upward;
-                }
-                characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
-            }
-
-            public override void Update()
-            {
-                base.Update();
-                TryCancelAnimation(false);
-            }
-
-            public void TryCancelAnimation(bool force)
-            {
-                if ((age >= duration || force) && !didCancelAnimation)
-                {
-                    PlayCrossfade("Body", "Idle", 1f);
-                    didCancelAnimation = true;
-                }
-            }
-
-            public override void OnExit()
-            {
-                TryCancelAnimation(true);
-                characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
-                if (isAuthority)
-                {
-                    characterMotor.onMovementHit -= OnMovementHit;
-                }
-                base.OnExit();
-            }
-        }*/
-
-        /*
-        public class BeetleBurrowOld : BaseState
-        {
-            //private Transform modelTransform;
-            private Vector3 blinkDestination = Vector3.zero;
-            private Vector3 blinkStart = Vector3.zero;
-            public float duration = 1f;
-            private CharacterModel characterModel;
-            private HurtBoxGroup hurtboxGroup;
-
-            public override void OnEnter()
-            {
-                base.OnEnter();
-                //Play_beetle_guard_attack2_initial
-                duration = Instance.baseBurrowDuration;
-                Transform modelTransform = GetModelTransform();
-                if (modelTransform)
-                {
-                    characterModel = modelTransform.GetComponent<CharacterModel>();
-                    hurtboxGroup = modelTransform.GetComponent<HurtBoxGroup>();
-                }
-                if (characterModel)
-                {
-                    characterModel.invisibilityCount++;
-                }
-                if (hurtboxGroup)
-                {
-                    hurtboxGroup.hurtBoxesDeactivatorCounter++;
-                }
-                if (characterMotor)
-                {
-                    characterMotor.enabled = false;
-                }
-                gameObject.layer = LayerIndex.fakeActor.intVal;
-                characterMotor.Motor.RebuildCollidableLayers();
-                CalculateBlinkDestination();
-                RoR2.Util.PlaySound("Play_magmaWorm_burrowed_loop", gameObject);
-            }
-
-            private void CalculateBlinkDestination()
-            {
-                Vector3 difference = Vector3.zero;
-                Ray aimRay = GetAimRay();
-                BullseyeSearch bullseyeSearch = new BullseyeSearch
-                {
-                    searchOrigin = aimRay.origin,
-                    searchDirection = aimRay.direction,
-                    maxDistanceFilter = 100f,
-                    teamMaskFilter = TeamMask.allButNeutral,
-                    filterByLoS = false,
-                    sortMode = BullseyeSearch.SortMode.Angle,
-                };
-                bullseyeSearch.teamMaskFilter.RemoveTeam(TeamComponent.GetObjectTeam(gameObject));
-                bullseyeSearch.RefreshCandidates();
-                HurtBox hurtBox = bullseyeSearch.GetResults().FirstOrDefault();
-                if (hurtBox)
-                {
-                    difference = hurtBox.transform.position - transform.position;
-                    CharacterMotor characterMotor = hurtBox.healthComponent?.body?.characterMotor;
-                    if (characterMotor)
-                    {
-                        difference += characterMotor.moveDirection.normalized * 20f;
-                    }
-                }
-                blinkDestination = transform.position;
-                blinkStart = transform.position;
-                NodeGraph groundNodes = SceneInfo.instance.groundNodes;
-                NodeGraph.NodeIndex nodeIndex = groundNodes.FindClosestNode(transform.position + difference, characterBody.hullClassification);
-                groundNodes.GetNodePosition(nodeIndex, out blinkDestination);
-                blinkDestination += transform.position - characterBody.footPosition;
-                characterDirection.forward = difference;
-            }
-
-            private void SetPosition(Vector3 newPosition)
-            {
-                characterMotor?.Motor.SetPositionAndRotation(newPosition, Quaternion.identity, true);
-            }
-
-            public override void FixedUpdate()
-            {
-                base.FixedUpdate();
-                if (characterMotor)
-                {
-                    characterMotor.velocity = Vector3.zero;
-                }
-                //SetPosition(Vector3.Lerp(blinkStart, blinkDestination, fixedAge / duration));
-                if (fixedAge >= duration)
-                {
-                    outer.SetNextState(new ExitBurrow());
-                }
-            }
-
-            public override void OnExit()
-            {
-                SetPosition(blinkDestination);
-                gameObject.layer = LayerIndex.defaultLayer.intVal;
-                characterMotor.Motor.RebuildCollidableLayers();
-                //modelTransform = GetModelTransform();
-                if (characterModel)
-                {
-                    characterModel.invisibilityCount--;
-                }
-                if (hurtboxGroup)
-                {
-                    hurtboxGroup.hurtBoxesDeactivatorCounter--;
-                }
-                if (characterMotor)
-                {
-                    characterMotor.enabled = true;
-                }
-                RoR2.Util.PlaySound("Stop_magmaWorm_burrowed_loop", gameObject);
-                base.OnExit();
-            }
-        }*/
     }
 }

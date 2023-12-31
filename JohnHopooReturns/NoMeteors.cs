@@ -4,7 +4,6 @@ using BepInEx;
 using RoR2;
 using HG;
 using System.Collections.Generic;
-using R2API;
 using System.Collections;
 using RoR2.ContentManagement;
 using UnityEngine.AddressableAssets;

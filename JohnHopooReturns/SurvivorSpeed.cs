@@ -6,14 +6,13 @@ using HG;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using R2API;
-using BepInEx.Bootstrap;
 using System.Collections;
 using RoR2.ContentManagement;
 using RoR2.Skills;
 
 namespace JohnHopooReturns
 {
-    public class SurvivorSpeed : JohnHopooReturns.Behaviour, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
+    public class SurvivorSpeed : JohnHopooReturns.Behaviour<SurvivorSpeed>, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
         const string SECTION = "Survivor Speed Changes";
 
@@ -32,10 +31,10 @@ namespace JohnHopooReturns
         [SystemInitializer(typeof(SurvivorCatalog))]
         public static void TryInit()
         {
-            if (Chainloader.ManagerObject.TryGetComponent(out SurvivorSpeed survivorSpeed)) 
+            if (Exists) 
             {
-                float baseSpeedScalar = survivorSpeed.baseSpeed / 7f;
-                float sprintSpeedScalar = survivorSpeed.sprintSpeedMultiplier / 1.45f;
+                float baseSpeedScalar = Instance.baseSpeed / 7f;
+                float sprintSpeedScalar = Instance.sprintSpeedMultiplier / 1.45f;
                 foreach (SurvivorDef survivorDef in SurvivorCatalog.allSurvivorDefs)
                 {
                     if (survivorDef.bodyPrefab && survivorDef.bodyPrefab.TryGetComponent(out CharacterBody characterBody))

@@ -13,13 +13,12 @@ using Mono.Cecil.Cil;
 using RoR2.Orbs;
 using UnityEngine.Networking;
 using RoR2.Items;
-using BepInEx.Bootstrap;
 using System.Linq;
 using Mono.Cecil;
 
 namespace JohnHopooReturns
 {
-    public class HappiestMask : JohnHopooReturns.Behaviour
+    public class HappiestMask : JohnHopooReturns.Behaviour<HappiestMask>
     {
         const string SECTION = "100% Chance Happiest Mask";
 
@@ -120,15 +119,15 @@ namespace JohnHopooReturns
         [SystemInitializer(typeof(BodyCatalog), typeof(MasterCatalog))]
         public static void TryInit()
         {
-            if (Chainloader.ManagerObject.TryGetComponent(out HappiestMask happiestMask))
+            if (Exists)
             {
-                happiestMask.aiMastersByBody = new CharacterMaster[BodyCatalog.bodyCount];
+                Instance.aiMastersByBody = new CharacterMaster[BodyCatalog.bodyCount];
                 foreach (CharacterMaster aiMaster in MasterCatalog.allAiMasters)
                 {
                     BodyIndex bodyIndex = BodyCatalog.FindBodyIndex(aiMaster.bodyPrefab);
-                    if (bodyIndex > BodyIndex.None && bodyIndex < (BodyIndex)BodyCatalog.bodyCount && happiestMask.aiMastersByBody[(int)bodyIndex] == null)
+                    if (bodyIndex > BodyIndex.None && bodyIndex < (BodyIndex)BodyCatalog.bodyCount && Instance.aiMastersByBody[(int)bodyIndex] == null)
                     {
-                        happiestMask.aiMastersByBody[(int)bodyIndex] = aiMaster;
+                        Instance.aiMastersByBody[(int)bodyIndex] = aiMaster;
                     }
                 }
             }

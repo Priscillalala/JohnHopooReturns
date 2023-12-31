@@ -13,11 +13,10 @@ using Mono.Cecil.Cil;
 using RoR2.Orbs;
 using UnityEngine.Networking;
 using RoR2.Items;
-using BepInEx.Bootstrap;
 
 namespace JohnHopooReturns
 {
-    public class LeechingSeed : JohnHopooReturns.Behaviour
+    public class LeechingSeed : JohnHopooReturns.Behaviour<LeechingSeed>
     {
         const string SECTION = "Leeching Seed Ignores Proc Coefficient";
 
@@ -48,7 +47,7 @@ namespace JohnHopooReturns
         public class HealOnHitBehaviour : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
         {
             [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-            public static ItemDef GetItemDef() => Chainloader.ManagerObject.GetComponent<LeechingSeed>() ? RoR2Content.Items.Seed : null;
+            public static ItemDef GetItemDef() => Exists ? RoR2Content.Items.Seed : null;
 
             public void OnDamageDealtServer(DamageReport damageReport)
             {

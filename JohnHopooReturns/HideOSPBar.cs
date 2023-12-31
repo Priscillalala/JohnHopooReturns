@@ -9,7 +9,6 @@ using System.Collections;
 using RoR2.ContentManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Rendering.PostProcessing;
 using RoR2.UI;
 
 namespace JohnHopooReturns

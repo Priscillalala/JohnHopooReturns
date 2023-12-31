@@ -9,12 +9,11 @@ using System.Collections;
 using RoR2.ContentManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using BepInEx.Bootstrap;
 using System.Linq;
 
 namespace JohnHopooReturns
 {
-    public class MonsterStats : JohnHopooReturns.Behaviour, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
+    public class MonsterStats : JohnHopooReturns.Behaviour<MonsterStats>, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
         const string SECTION = "Monster Health Tweaks";
 
@@ -30,7 +29,7 @@ namespace JohnHopooReturns
         [SystemInitializer(typeof(CombatDirector))]
         public static void TryInit()
         {
-            if (Chainloader.ManagerObject.TryGetComponent(out MonsterStats monsterStats))
+            if (Exists)
             {
                 CombatDirector.EliteTierDef tierOne = CombatDirector.eliteTiers.FirstOrDefault(x => Array.IndexOf(x.eliteTypes, RoR2Content.Elites.Fire) >= 0);
                 if (tierOne != null)

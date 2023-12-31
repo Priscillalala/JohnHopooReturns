@@ -10,15 +10,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
-using RoR2.Orbs;
-using UnityEngine.Networking;
-using RoR2.Items;
-using BepInEx.Bootstrap;
-using RoR2.UI;
-using System.Linq;
-using UnityEngine.UI;
-using RoR2.Audio;
-using RoR2.ContentManagement;
 
 namespace JohnHopooReturns
 {

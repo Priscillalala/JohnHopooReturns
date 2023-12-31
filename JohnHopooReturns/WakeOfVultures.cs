@@ -9,7 +9,6 @@ using System.Collections;
 using RoR2.ContentManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using RoR2.Items;
 using RoR2.Orbs;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
