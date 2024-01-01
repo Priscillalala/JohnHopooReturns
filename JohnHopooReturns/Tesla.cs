@@ -22,7 +22,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Tesla Coil only activates once per minute but deals massive damage."))
             {
                 Destroy(this);
                 return;

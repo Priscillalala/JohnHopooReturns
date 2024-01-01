@@ -22,14 +22,14 @@ namespace JohnHopooReturns
 {
     public class Beetles : JohnHopooReturns.Behaviour<Beetles>, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
-        const string SECTION = "Beetles";
+        const string SECTION = "Beetle Buff";
 
         public static SkillDef BeetleBodyBurrow { get; private set; }
         public static GameObject BeetleBurrowEffect { get; private set; }
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Beetles move faster, spawn faster, and gain a new burrow skill."))
             {
                 Destroy(this);
                 return;

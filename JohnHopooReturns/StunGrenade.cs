@@ -20,16 +20,13 @@ namespace JohnHopooReturns
 
         public float totalDamageCoefficient = Config.Value(SECTION, "Total Damage Coefficient", 0.8f);
 
-        public static ModdedProcType StunGrenadeExplosion { get; private set; }
-
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Stun Grenade deals bonus damage on proc."))
             {
                 Destroy(this);
                 return;
             }
-            StunGrenadeExplosion = ProcTypeAPI.ReserveProcType();
             LanguageAPI.Add("ITEM_STUNCHANCEONHIT_DESC", $"<style=cIsDamage>5%</style> <style=cStack>(+5% per stack)</style> chance on hit to <style=cIsDamage>stun</style> enemies for <style=cIsDamage>{totalDamageCoefficient:0%}</style> TOTAL damage.");
             IL.RoR2.SetStateOnHurt.OnTakeDamageServer += SetStateOnHurt_OnTakeDamageServer;
         }
@@ -46,12 +43,10 @@ namespace JohnHopooReturns
                 c.Emit(OpCodes.Ldarg, 1);
                 c.EmitDelegate<Action<DamageReport>>((damageReport) =>
                 {
-                    if (!damageReport.attackerBody || damageReport.damageInfo.procChainMask.HasModdedProc(StunGrenadeExplosion))
+                    if (!damageReport.attackerBody)
                     {
                         return;
                     }
-                    ProcChainMask procChainMask = damageReport.damageInfo.procChainMask;
-                    procChainMask.AddModdedProc(StunGrenadeExplosion);
                     DamageInfo damageInfo = new DamageInfo
                     {
                         attacker = damageReport.attacker,
@@ -60,11 +55,9 @@ namespace JohnHopooReturns
                         damageColorIndex = DamageColorIndex.Item,
                         inflictor = null,
                         position = damageReport.damageInfo.position,
-                        procCoefficient = 0.5f,
-                        procChainMask = procChainMask,
+                        procCoefficient = 0f,
                     };
                     damageReport.victim.TakeDamage(damageInfo);
-                    GlobalEventManager.instance.OnHitEnemy(damageInfo, damageReport.victim.gameObject);
                 });
             }
             else Logger.LogError($"{(nameof(StunGrenade))}.{nameof(SetStateOnHurt_OnTakeDamageServer)} IL hook failed!");

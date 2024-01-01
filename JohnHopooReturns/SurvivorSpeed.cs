@@ -21,7 +21,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Survivors walk slower but sprint at the same speed. Also fixes Commando's roll not scaling with sprint speed."))
             {
                 Destroy(this);
                 return;

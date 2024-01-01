@@ -17,7 +17,7 @@ namespace JohnHopooReturns
 {
     public class Opal : JohnHopooReturns.Behaviour, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
-        const string SECTION = "Oddly Shaped Opal Re-tier";
+        const string SECTION = "Uncommon Oddly-shaped Opal";
 
         public void Awake()
         {

@@ -20,13 +20,13 @@ namespace JohnHopooReturns
 {
     public class HappiestMask : JohnHopooReturns.Behaviour<HappiestMask>
     {
-        const string SECTION = "100% Chance Happiest Mask";
+        const string SECTION = "Happiest Mask Always Procs";
 
         public CharacterMaster[] aiMastersByBody;
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Happiest Mask chance increaed to 100% with reduced duration and damage."))
             {
                 Destroy(this);
                 return;

@@ -19,7 +19,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Reduces Squid Polyp knockback force and increases firerate to compensate."))
             {
                 Destroy(this);
                 return;

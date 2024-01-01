@@ -24,7 +24,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Bungus has better stacking but cannot be used while attacking. Also includes a notable damage buff for Engineer's stationary turrets."))
             {
                 Destroy(this);
                 return;

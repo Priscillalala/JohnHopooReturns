@@ -30,7 +30,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Soulbound Catalyst converts damage taken into equipment charge. Also reduces Forgive Me Please cooldown to 30s."))
             {
                 Destroy(this);
                 return;

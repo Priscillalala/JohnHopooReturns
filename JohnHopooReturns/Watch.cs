@@ -30,7 +30,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Delicate Watch becomes Wristwatch and slows nearby enemies and projectiles."))
             {
                 Destroy(this);
                 return;

@@ -26,21 +26,20 @@ namespace JohnHopooReturns
         const string SECTION = "Rejuvenation Rack Rework";
 
         public float spiritDuration = 10f;
-        public float baseSpiritRegen = 1f;
 
         public static GameObject SpiritPrefab { get; private set; }
         public static GameObject SummonSpiritsEffect { get; private set; }
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Rejuv Rack becomes a counterpart to N'kuhana's Opinion with a similar but more visual effect."))
             {
                 Destroy(this);
                 return;
             }
             NetworkingAPI.RegisterMessageType<SummonSpiritsBehaviour.SummonSpiritMessage>();
             LanguageAPI.Add("ITEM_INCREASEHEALING_PICKUP", "Invite friendly spirits when healed.");
-            LanguageAPI.Add("ITEM_INCREASEHEALING_DESC", $"Store <style=cIsHealing>100%</style> <style=cStack>(+100% per stack)</style> of healing as <style=cIsHealing>Soul Energy</style>. After your <style=cIsHealing>Soul Energy</style> reaches 10% of your maximum health, <style=cIsHealing>invite a spirit</style> to increase <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+{baseSpiritRegen} hp/s</style> over <style=cIsHealing>{spiritDuration}s</style>.");
+            LanguageAPI.Add("ITEM_INCREASEHEALING_DESC", $"Store <style=cIsHealing>100%</style> <style=cStack>(+100% per stack)</style> of healing as <style=cIsHealing>Soul Energy</style>. After your <style=cIsHealing>Soul Energy</style> reaches 10% of your maximum health, <style=cIsHealing>invite a spirit</style> to heal for <style=cIsHealing>100%</style> of your <style=cIsHealing>Soul Energy</style> over <style=cIsHealing>{spiritDuration}s</style>.");
             IL.RoR2.HealthComponent.ItemCounts.ctor += ItemCounts_ctor;
         }
 
@@ -117,12 +116,6 @@ namespace JohnHopooReturns
                 ParticleSystem.MainModule main = closeParticlesSystem.main;
                 main.startColor = new ParticleSystem.MinMaxGradient(Color.yellow, Color.green);
                 spiritController.particles = closeParticlesSystem;
-                //SpiritPrefab.AddComponent<DetachParticleOnDestroyAndEndEmission>().particleSystem = closeParticlesSystem;
-                /*if (closeParticles.TryGetComponent(out ParticleSystemRenderer closeParticlesRenderer))
-                {
-                    closeParticlesRenderer.sharedMaterial = new Material(closeParticlesRenderer.sharedMaterial);
-                    closeParticlesRenderer.sharedMaterial
-                }*/
             }
             if (SpiritPrefab.transform.TryFind("Particles/OnSpawnPopParticle", out Transform onSpawnPopParticle) && onSpawnPopParticle.TryGetComponent(out ParticleSystem onSpawnPopParticleSystem))
             {
@@ -241,9 +234,10 @@ namespace JohnHopooReturns
             {
                 if (sender && sender == body)
                 {
-                    float regen = Instance.baseSpiritRegen * activeSpirits.Count;
-                    args.baseRegenAdd += regen;
-                    args.levelRegenAdd += regen * StandardLevelScaling.Regen;
+                    foreach (SpiritController spirit in activeSpirits)
+                    {
+                        args.baseRegenAdd += spirit.regenValue;
+                    }
                 }
             }
 
@@ -273,8 +267,9 @@ namespace JohnHopooReturns
                 if (summonSpiritTimerServer <= 0f)
                 {
                     summonSpiritTimerServer += 0.1f;
-                    healingPoolServer -= body.healthComponent.fullCombinedHealth / 10f;
-                    SummonSpiritServer();
+                    float energy = body.healthComponent.fullCombinedHealth / 10f;
+                    healingPoolServer -= energy;
+                    SummonSpiritServer(energy);
                 }
             }
 
@@ -286,22 +281,24 @@ namespace JohnHopooReturns
                 }
             }
 
-            public void SummonSpiritServer()
+            public void SummonSpiritServer(float energy)
             {
                 Vector3 offset = UnityEngine.Random.onUnitSphere * 20f;
                 offset.y = Mathf.Abs(offset.y);
-                InstantiateSpirit(offset);
+                float regenValue = energy / Instance.spiritDuration;
+                InstantiateSpirit(regenValue, offset);
                 if (networkIdentity)
                 {
-                    new SummonSpiritMessage(offset, networkIdentity.netId).Send(NetworkDestination.Clients);
+                    new SummonSpiritMessage(regenValue, offset, networkIdentity.netId).Send(NetworkDestination.Clients);
                 }
             }
 
-            public void InstantiateSpirit(Vector3 offset)
+            public void InstantiateSpirit(float regenValue, Vector3 offset)
             {
                 Transform targetTransform = headTransform ?? transform;
                 SpiritController spiritInstance = Instantiate(SpiritPrefab, targetTransform.position + offset, Quaternion.identity).GetComponent<SpiritController>();
                 spiritInstance.lifespan = Instance.spiritDuration;
+                spiritInstance.regenValue = regenValue;
                 spiritInstance.targetTransform = targetTransform;
                 spiritInstance.currentOffset = offset;
                 activeSpirits.Enqueue(spiritInstance);
@@ -344,25 +341,29 @@ namespace JohnHopooReturns
 
             public class SummonSpiritMessage : INetMessage
             {
+                private float regenValue;
                 private Vector3 offset;
                 private NetworkInstanceId networkInstanceId;
 
                 public SummonSpiritMessage() { }
 
-                public SummonSpiritMessage(Vector3 offset, NetworkInstanceId networkInstanceId)
+                public SummonSpiritMessage(float regenValue, Vector3 offset, NetworkInstanceId networkInstanceId)
                 {
+                    this.regenValue = regenValue;
                     this.offset = offset;
                     this.networkInstanceId = networkInstanceId;
                 }
 
                 public void Serialize(NetworkWriter writer)
                 {
+                    writer.Write(regenValue);
                     writer.Write(offset);
                     writer.Write(networkInstanceId);
                 }
 
                 public void Deserialize(NetworkReader reader)
                 {
+                    regenValue = reader.ReadSingle();
                     offset = reader.ReadVector3();
                     networkInstanceId = reader.ReadNetworkId();
                 }
@@ -376,7 +377,7 @@ namespace JohnHopooReturns
                     GameObject gameObject = RoR2.Util.FindNetworkObject(networkInstanceId);
                     if (gameObject && gameObject.TryGetComponent(out SummonSpiritsBehaviour summonSpiritsBehaviour))
                     {
-                        summonSpiritsBehaviour.InstantiateSpirit(offset);
+                        summonSpiritsBehaviour.InstantiateSpirit(regenValue, offset);
                     }
                 }
             }
@@ -386,6 +387,7 @@ namespace JohnHopooReturns
                 public ParticleSystem particles;
                 public TrailRenderer trail;
                 public float lifespan;
+                public float regenValue;
                 public Transform targetTransform;
                 public float updateOffsetTimer;
                 public Vector3 currentOffset;

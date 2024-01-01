@@ -17,7 +17,7 @@ namespace JohnHopooReturns
 {
     public class RoseBuckler : JohnHopooReturns.Behaviour, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
-        const string SECTION = "Rose Buckler Re-tier";
+        const string SECTION = "Common Rose Buckler";
 
         public sbyte armorBonus = Config.Value<sbyte>(SECTION, "Armor Bonus Per Stack", 10);
 

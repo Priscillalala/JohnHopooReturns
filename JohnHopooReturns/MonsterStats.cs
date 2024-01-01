@@ -15,11 +15,11 @@ namespace JohnHopooReturns
 {
     public class MonsterStats : JohnHopooReturns.Behaviour<MonsterStats>, JohnHopooReturns.IOnLoadStaticContentAsyncProvider
     {
-        const string SECTION = "Monster Health Tweaks";
+        const string SECTION = "Monster Stat Tweaks";
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "A collection of enemy balance changes focused on the first few stages. Increases the health of weaker monsters like Beetles and Lemurians. Elites are cheaper to spawn but have reduced health. Greater Wisps cost less credits to spawn."))
             {
                 Destroy(this);
                 return;

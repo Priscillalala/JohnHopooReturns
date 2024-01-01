@@ -26,7 +26,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Power Elixir becomes Elixir and saves you from lethal damage once."))
             {
                 Destroy(this);
                 return;

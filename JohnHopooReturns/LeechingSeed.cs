@@ -22,7 +22,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Leeching Seed heals 1 from all damage, including damage over times."))
             {
                 Destroy(this);
                 return;

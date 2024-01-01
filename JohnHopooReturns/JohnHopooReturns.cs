@@ -28,7 +28,7 @@ using R2API.Networking;
 
 namespace JohnHopooReturns
 {
-    [BepInPlugin("com.groovesalad.JohnHopooReturns", "JohnHopooReturns", "1.0.0")]
+    [BepInPlugin("com.groovesalad.JohnHopooReturns", "JohnHopooReturns", "0.0.0")]
     [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInDependency(PrefabAPI.PluginGUID)]
     [BepInDependency(NetworkingAPI.PluginGUID)]
@@ -70,7 +70,7 @@ namespace JohnHopooReturns
             gameObject.AddComponent<Polyp>();
             gameObject.AddComponent<RejuvRack>();
             gameObject.AddComponent<NoMeteors>();
-            gameObject.AddComponent<LaserScope>();
+            //gameObject.AddComponent<LaserScope>();
             gameObject.AddComponent<Tesla>();
             //gameObject.AddComponent<WakeOfVultures>();
             gameObject.AddComponent<StunGrenade>();
