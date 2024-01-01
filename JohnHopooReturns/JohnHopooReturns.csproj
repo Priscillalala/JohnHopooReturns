@@ -12,12 +12,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="..\manifest.json" Link="manifest.json" />
+	  <Content Include="..\manifest.json" Link="package/manifest.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\CHANGELOG.md" Link="CHANGELOG.md" />
-	  <None Include="..\README.md" Link="README.md" />
+	  <None Include="..\CHANGELOG.md" Link="package/CHANGELOG.md" />
+	  <None Include="..\README.md" Link="package/README.md" />
 	</ItemGroup>
 
 	<ItemGroup>

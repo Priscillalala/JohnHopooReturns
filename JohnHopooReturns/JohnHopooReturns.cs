@@ -28,7 +28,7 @@ using R2API.Networking;
 
 namespace JohnHopooReturns
 {
-    [BepInPlugin("com.groovesalad.JohnHopooReturns", "JohnHopooReturns", "0.0.0")]
+    [BepInPlugin("com.groovesalad.vs.theGame", "Groove_Salad_vs_the_Game", "0.0.0")]
     [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInDependency(PrefabAPI.PluginGUID)]
     [BepInDependency(NetworkingAPI.PluginGUID)]
