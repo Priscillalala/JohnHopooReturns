@@ -33,7 +33,6 @@ namespace JohnHopooReturns
     [BepInDependency(PrefabAPI.PluginGUID)]
     [BepInDependency(NetworkingAPI.PluginGUID)]
     [BepInDependency(RecalculateStatsAPI.PluginGUID)]
-    [BepInDependency(DamageAPI.PluginGUID)]
     public class JohnHopooReturns : BaseUnityPlugin, IContentPackProvider
     {
         public ContentPack contentPack;
