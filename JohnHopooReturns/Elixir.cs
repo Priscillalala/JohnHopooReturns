@@ -21,9 +21,6 @@ namespace JohnHopooReturns
     {
         const string SECTION = "Power Elixir Rework";
 
-        //public float healingPercentage = Config.Value(SECTION, "Healing Percentage", 0.08f);
-        //public float delay = 0.1f;
-
         public void Awake()
         {
             if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Power Elixir becomes Elixir and saves you from lethal damage once."))
@@ -95,67 +92,5 @@ namespace JohnHopooReturns
                 }
             }
         }
-
-        /*public class ElixirBehaviour : BaseItemBodyBehavior, IOnIncomingDamageServerReceiver, IOnTakeDamageServerReceiver
-        {
-            [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-            public static ItemDef GetItemDef() => Exists ? DLC1Content.Items.HealingPotion : null;
-
-            private NetworkSoundEventIndex nseParentEggHeal = LegacyResourcesAPI.Load<NetworkSoundEventDef>("NetworkSoundEventDefs/nseParentEggHeal").index;
-            private Queue<Heal> healingQueue = new Queue<Heal>();
-
-            public void OnEnable()
-            {
-                body.healthComponent.AddIncomingDamageReceiver(this);
-                body.healthComponent.AddTakeDamageReceiver(this);
-            }
-
-            public void OnDisable()
-            {
-                body.healthComponent.RemoveIncomingDamageReceiver(this);
-                body.healthComponent.RemoveTakeDamageReceiver(this);
-            }
-
-            public void OnIncomingDamageServer(DamageInfo damageInfo)
-            {
-                if (damageInfo.rejected)
-                {
-                    HealFrom(damageInfo.damage);
-                }
-            }
-
-            public void OnTakeDamageServer(DamageReport damageReport)
-            {
-                HealFrom(damageReport.damageDealt);
-            }
-
-            public void HealFrom(float damage)
-            {
-                if (damage > 0)
-                {
-                    float healingFraction = 1f - 1f / (1f + Instance.healingPercentage * stack);
-                    healingQueue.Enqueue(new Heal
-                    {
-                        value = damage * healingFraction,
-                        time = Run.FixedTimeStamp.now + Instance.delay
-                    });
-                }
-            }
-
-            public void FixedUpdate()
-            {
-                if (healingQueue.Count > 0 && healingQueue.Peek().time.hasPassed)
-                {
-                    body.healthComponent.Heal(healingQueue.Dequeue().value, default, true);
-                    EntitySoundManager.EmitSoundServer(nseParentEggHeal, gameObject);
-                }
-            }
-
-            public struct Heal
-            {
-                public float value;
-                public Run.FixedTimeStamp time;
-            }
-        }*/
     }
 }
