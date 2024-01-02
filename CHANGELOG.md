@@ -1,4 +1,4 @@
-﻿## 0.0.0
+## 0.0.0
 ### Items
 - Bustling Fungus
 	- Healing per second: ~~4.5% (+2.25% per stack)~~ ⇒ 4.5% (+4.5% per stack)

@@ -2,8 +2,8 @@
 Changes stuff, or whatever?
 ## Item Reworks
 ## <img src="https://github.com/Priscillalala/JohnHopooReturns/blob/master/thunderstore/itemreworks.PNG?raw=true" alt="Item Reworks Preview" width=1200>
-Reworks and rebalances for 16 items. 
-* Focuses on unfun or overly weak items to increase item variety without raising the player's power ceiling
+Reworks or rebalances 16 items. 
+* Focuses on unfun or overly weak items to increase build variety without raising the player's power ceiling
 * The current scope is only standard items, but boss, lunar, and void items may be included in the future
 
 ## Stronger Monsters
