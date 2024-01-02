@@ -26,7 +26,7 @@ namespace JohnHopooReturns
 
         public void Awake()
         {
-            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Happiest Mask chance increaed to 100% with reduced duration and damage."))
+            if (!Config.Value(SECTION, string.Format(BEHAVIOUR_ENABLED, SECTION), true, "Happiest Mask chance increased to 100% with reduced duration and damage."))
             {
                 Destroy(this);
                 return;

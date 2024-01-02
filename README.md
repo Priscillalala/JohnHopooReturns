@@ -1,4 +1,4 @@
-# Groove Salad vs. the Game
+# Groove_Salad vs. the Game
 Changes stuff, or whatever?
 ## Item Reworks
 ## <img src="https://github.com/Priscillalala/JohnHopooReturns/blob/master/thunderstore/itemreworks.PNG?raw=true" alt="Item Reworks Preview" width=1200>
